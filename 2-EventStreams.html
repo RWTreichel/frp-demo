@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bacon.js</title>
+</head>
+<body>
+
+  <div id="container">
+    <input type="text" id="searchInput">
+    <button id="searchButton">Search</button>
+    <a href="3-TheCallbackApproach.html">Next</a>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+
+  <!-- Bacon.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bacon.js/0.7.75/Bacon.js"></script>
+
+  <script>
+    $(document).ready(setup);
+
+    function setup() {
+      // An event stream of clicks on the search button
+      var buttonStream = $("#searchButton").asEventStream("click");
+
+      // .onValue() is how we decide what to do with events as they are produced
+      buttonStream.onValue(function(e) {
+        console.log("Hello from Bacon.js");
+      });
+    }
+  </script>
+</body>
+</html>

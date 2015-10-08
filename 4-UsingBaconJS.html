@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bacon.js</title>
+</head>
+<body>
+
+  <div id="container">
+    <input type="text" id="searchInput">
+    <button id="searchButton">Search</button>
+    <a href="3-TheCallbackApproach.html">Previous</a>
+    <a href="5-Properties.html">Next</a>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+
+  <!-- Bacon.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bacon.js/0.7.75/Bacon.js"></script>
+
+  <script>
+    $(document).ready(setup);
+
+    function setup() {
+      // Click stream for the search button:
+      // Produce a click event on buttonStream when the search button is clicked.
+
+      // c = click
+      // -----c-----c--->
+      var buttonStream = $("#searchButton").asEventStream("click");
+
+      // "Enter" keyup stream for the input textbox:
+      // For each 'keyup' event on the textbox, check if the event's
+      // keyCode property is 13, representing the "Enter" key. If so, pass
+      // the event along. Otherwise, don't forward the event down the stream.
+
+      // E = enter
+      // ---d--o--g--E----->
+      // VVVV filter(E) VVVV
+      // ------------E----->
+      var enterStream = $("#searchInput").asEventStream("keyup")
+        .filter(function(e) {
+          return e.keyCode === 13;
+        }
+      );
+
+      // v = $('#searchInput').val() as a single-value EventStream
+      // p = Single-value EventStream based on the AJAX Promise from doSearch()
+      // ---------c-------------->
+      // ----E-----------------E->
+      // VVVVVVV mergeAll VVVVVVVV
+      // ----E----c------------E->
+      // VVVVVVV map(v) VVVVVVVVVV
+      // ----v----v------------v->
+      // VVVVV flatMapLatest VVVVV (Bonus: Why flatMapLatest instead of flatMap?)
+      // ----p----p------------p->
+      var searchStream = Bacon.mergeAll(buttonStream, enterStream)
+        .map(function() { return $("#searchInput").val(); })
+        .flatMapLatest(doSearch);
+
+      searchStream.onValue(function(results) {
+        console.log(results);
+      });
+    }
+
+    function doSearch(query) {
+      var url = 'http://en.wikipedia.org/w/api.php?action=opensearch'
+        + '&format=json' 
+        + '&limit=100'
+        + '&search=' + encodeURI(query);
+
+      // Returns an EventStream that will return its Promise's resolved value
+      // once it either succeeds or fails. This is the only event this
+      // stream will ever produce (it is a single-value stream).
+
+      // $.ajax() performs an HTTP request, returning the Promise used
+      // as the argument to .fromPromise().
+      return Bacon.fromPromise($.ajax({url:url, dataType:"jsonp"}));
+    }
+  </script>
+</body>
+</html>

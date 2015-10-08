@@ -1,0 +1,8 @@
+- [Bacon.js Homepage](http://baconjs.github.io/index.html)
+- [RxJs - Library that Bacon.js is largely based on](https://github.com/Reactive-Extensions/RxJS)
+- [Sean Voisen's Bacon.js demo (The one shown during the presentation)](http://sean.voisen.org/blog/2013/09/intro-to-functional-reactive-programming/)
+- [André Staltz - "The introduction to Reactive Programming you've been missing" (Very high quality tutorial / intro to reactive programming and thinking with streams.)](https://gist.github.com/staltz/868e7e9bc2a7b8c1f754)
+- [The 'rx-book': Denis Stoyanov's free online book on RxJS (Published on GitBook, nice UI)](http://xgrommx.github.io/rx-book/)
+- [Stack Overflow - "What is (functional) reactive programming?" (Top answer is from an authority on the subject, gets technical really fast though.)](http://stackoverflow.com/questions/1028250/what-is-functional-reactive-programming)
+- [Quora - "What is functional reactive programming?"](https://www.quora.com/What-is-Functional-Reactive-Programming)
+- [Frontend Masters Course - "Asychronous Programming inJavaScript" (Paid resource, uses RxJS. Excellent instructor from Netflix - Jafar Husain)](https://frontendmasters.com/courses/asynchronous-javascript/)

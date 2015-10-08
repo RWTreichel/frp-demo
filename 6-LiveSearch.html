@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bacon.js</title>
+</head>
+<body>
+
+  <div id="container">
+    <input type="text" id="searchInput">
+    <button id="searchButton">Search</button>
+    <a href="5-Properties.html">Previous</a>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+
+  <!-- Bacon.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bacon.js/0.7.75/Bacon.js"></script>
+
+  <script>
+    $(document).ready(setup);
+
+    function setup() {
+      var buttonStream = $("#searchButton").asEventStream("click");
+
+      // Now, every single keyup event flows down the searchStream,
+      // enabling what the user will perceive as a "live search" effect.
+      var keyStream = $("#searchInput").asEventStream("keyup");
+
+      var searchStream = Bacon.mergeAll(buttonStream, keyStream)
+        // .debounce(500) // Bonus: How does .debounce() help conserve on network requests?
+        .map(function() { return $('#searchInput').val(); })
+        .flatMapLatest(doSearch);
+
+      searchStream.onValue(function(results) {
+        console.log(results);
+      });
+
+      var totalSearches = searchStream.scan(0, function(value) { 
+        return ++value; 
+      });
+
+      totalSearches.onValue(function(total) {
+        console.log("Total searches: " + total);
+      });
+
+      var totalResults = searchStream.map(function(value){return value[1].length;}).toProperty();
+
+      totalResults.onValue(function(total) {
+        console.log("Search result count: " + total);
+      });
+    }
+
+    function doSearch(query)
+    {
+      var url = 'http://en.wikipedia.org/w/api.php?action=opensearch'
+          + '&format=json' 
+          + '&limit=100'
+          + '&search=' + encodeURI(query);
+
+      return Bacon.fromPromise($.ajax({url:url, dataType:"jsonp"}));
+    }
+  </script>
+</body>
+</html>

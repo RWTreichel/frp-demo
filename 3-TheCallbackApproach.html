@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bacon.js</title>
+</head>
+<body>
+
+  <div id="container">
+    <input type="text" id="searchInput">
+    <button id="searchButton">Search</button>
+    <a href="2-EventStreams.html">Previous</a>
+    <a href="4-UsingBaconJS.html">Next</a>
+  </div>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+
+  <!-- Bacon.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bacon.js/0.7.75/Bacon.js"></script>
+
+  <script>
+    $(document).ready(setup);
+
+    function setup() {
+      // Click handler for the search button:
+      // Perform a search on the user's input when the search button is clicked.
+      // Once the network request returns successfully, log the results.
+      $("#searchButton").click(function() {
+        doSearch($("#searchInput").val())
+          .onValue(function(results) {
+            console.log(results);
+          });
+      });
+
+      // "Enter" keyup handler for the input textbox:
+      // Perform a search on the user's input when the "Enter" key is pressed
+      // and the textbox has focus.
+      // Once the network request returns successfully, log the results.
+      $("#searchInput").keyup(function(e) {
+        if (e.keyCode == 13) {
+          doSearch($("#searchInput").val())
+            .onValue(function(results) {
+              console.log(results);
+            });
+        }
+      });
+    }
+
+
+    function doSearch(query) {
+      var url = 'http://en.wikipedia.org/w/api.php?action=opensearch'
+        + '&format=json' 
+        + '&limit=100'
+        + '&search=' + encodeURI(query);
+
+      // Returns an EventStream that will return its Promise's resolved value
+      // once it either succeeds or fails. This is the only event this
+      // stream will ever produce (it is a single-value stream).
+
+      // $.ajax() performs an HTTP request, returning the Promise used
+      // as the argument to .fromPromise().
+      return Bacon.fromPromise($.ajax({url:url, dataType:"jsonp"}));
+    }
+  </script>
+</body>
+</html>
